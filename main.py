@@ -1,8 +1,11 @@
 from flask import Flask, abort, jsonify, render_template
- 
+import json
+from Contact import Contact
+
 app = Flask(__name__)
 
-def readAgenda():
+
+def readAgenda() -> list[Contact]:
     agenda = []
 
     filepath = "data/agenda.csv"
@@ -11,12 +14,13 @@ def readAgenda():
         while line:
             line = fp.readline()
             if (line):
-                agenda.append(line.split(',',4))
-
+                contact_info = line.split(',')    # ["Name","Phone Number","date","genre"]
+                usuario = Contact(contact_info[0], contact_info[1], contact_info[2],contact_info[3])
+                agenda.append(usuario)
+                
     return agenda
 
 agenda = readAgenda()
-
 
 
 @app.route("/")
@@ -30,26 +34,22 @@ def text_simi():
 @app.route("/api/get_user/<user>")
 def getUser (user):
     for contact in agenda:
-        if user == contact[0]:
-            return jsonify(name=contact[0], number=contact[1], birth=contact[2], gender=contact[3])
+        if user == contact.name:
+            return json.dumps(contact, default=lambda x : x.__dict__)
         
-
     return jsonify(user=user, error="User not found."), 404
 
 @app.route("/api/get_adults")
-def getAdult():
-
+def getAdults():
     adults = []
 
     for contact in agenda:
-        year = int(contact[2][:4])
+        if contact.isAdult():
+            adults.append()    
+
+    return json.dumps(adults, default=lambda x : x.__dict__)
+    
         
-        if year < 2004:
-            adults.append([contact[0], contact[2]])
-    
-    return jsonify(adults)
-    
-            
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
