@@ -1,6 +1,8 @@
 from flask import Flask, abort, jsonify, render_template
 import json
 from Contact import Contact
+import pandas as pd
+import pandasql as ps
 
 app = Flask(__name__)
 
@@ -48,7 +50,44 @@ def getAdults():
             adults.append()    
 
     return json.dumps(adults, default=lambda x : x.__dict__)
-    
+
+@app.route("/api/get_adults/<texto>")
+def prediccion(texto):
+    texto = "Apaga la luz."             # Limpieza de símbolos. A -> a. -?-
+    texto = "apagala luz" 
+    texto = "apago luz"            
+
+    palabras = ["apaga", "la", "luz"]  # Tokenización
+    palabras = ["apagala", "luz"]
+
+    # Lematización
+    "apagala" , "apaga", "apago" # ->
+
+    stopwords = {"la", "con", "el", "una"}
+
+    palabras_nuevas = []
+    for palabra in palabras:
+        if not stopwords[palabra]:
+            palabras_nuevas.append(palabra)
+
+    palabras = ["apag", "luz"]  # Stopwords limpieza.
+
+    # ----- Procesado -----
+
+    # Procesado con algoritmos generales.
+
+    # Procesado con algoritmos propios.
+    instrucciones = {
+        "apag" : apagar
+
+    }
+
+    instrucciones["apag"]
+
+
+def apagar():
+    pass
+
         
 
 if __name__ == '__main__':
